@@ -1,3 +1,6 @@
+import '../pages/index.css';
+import initialCards from "./cards";
+
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
@@ -27,9 +30,7 @@ function createCard(data, handleDelete) {
 
 // @todo: Функция удаления карточки
 function deleteCard(cardElement) {
-    if (cardElement.parentNode) {
-        cardElement.parentNode.removeChild(cardElement);
-    }
+    cardElement.remove();
 }
 
 // @todo: Функция добавления новой карточки
@@ -46,7 +47,7 @@ function addCard(event) {
         };
 
         const newCard = createCard(newCardData, deleteCard);
-        placesList.appendChild(newCard);
+        placesList.prepend(newCard);
 
         newPlaceForm.reset();
         closePopup();
@@ -54,18 +55,15 @@ function addCard(event) {
 }
 
 function openPopup() {
-    popupNewCard.classList.add('popup_opened');
-    popupNewCard.style.display = 'flex';
-
+    popupNewCard.classList.add('popup_is-opened');
     const closeButton = popupNewCard.querySelector('.popup__close');
     closeButton.addEventListener('click', closePopup);
 }
 
 function closePopup() {
-    const popup = document.querySelector('.popup_opened');
+    const popup = document.querySelector('.popup_is-opened');
     if (popup) {
-        popup.classList.remove('popup_opened');
-        popup.style.display = 'none';
+        popup.classList.remove('popup_is-opened');
     }
 }
 
