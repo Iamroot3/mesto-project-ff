@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import initialCards from "./components/cards";
 import {closeModal, openModal} from "./components/modal";
-import {createCard, deleteCard} from "./components/card";
+import {createCard, deleteCard, handleLikeClick} from "./components/card";
 
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -19,13 +19,6 @@ const profileDescriptionElement = document.querySelector('.profile__description'
 const popupImage = document.querySelector('.popup_type_image');
 const imageElement = document.querySelector('.popup__image');
 const captionElement = document.querySelector('.popup__caption');
-
-// @todo: Функция Ставим лайк
-function handleLikeClick(evt) {
-    if (evt.target.classList.contains('card__like-button')) {
-        evt.target.classList.toggle('card__like-button_is-active');
-    }
-}
 
 // @todo: Функция Откроем image
 function handleOpenImage(imageLink, imageName) {
