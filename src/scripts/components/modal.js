@@ -26,7 +26,7 @@ function handleClose(evt) {
     closeModal(popupElement);
 }
 
-export function handleOverlayClose(evt) {
+function handleOverlayClose(evt) {
     if (evt.target === evt.currentTarget) {
         closeModal(evt.currentTarget);
     }
