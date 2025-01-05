@@ -22,7 +22,7 @@ function handleEscClose(evt) {
 }
 
 function handleClose(evt) {
-    const popupElement = evt.target.closest('.popup_is-opened');
+    const popupElement = evt.target.closest('.popup');
     closeModal(popupElement);
 }
 
