@@ -1,13 +1,10 @@
-.header__logo {
-  width: 142px;
-  height: 33px;
-  object-fit: contain;
+.header__logo{
+    margin-bottom: 36px;
 }
 
-@media screen and (max-width: 480px) {
-  .header__logo {
-    width: 104px;
-    height: 24px;
-    margin: 0 0 0 7px;
-  }
+@media screen and (max-width:500px) {
+    .header__logo {
+        width: 104px;
+        margin-bottom: 27px;
+    }
 }
