@@ -1,71 +1,39 @@
-export default class Card {
-    constructor(data, templateSelector, openCard, openPopupWithConfirmation, putLike, userId) {
-        this._data = data
-        this._name = this._data.name;
-        this._link = this._data.link;
-        this._templateSelector = templateSelector;
-        this._openCard = openCard;
-        this._openPopupWithConfirmation = openPopupWithConfirmation
-        this._putLike = putLike
-        this._userId = userId
-    };
+// @todo: Темплейт карточки
+const cardTemplate = document.querySelector('#card-template').content;
 
-    _setEventListeners() {
-        this._cardImage.addEventListener('click', () => {
-            this._openCard(this._name, this._link);
-        });
-        this._element.querySelector('.card__delete').addEventListener('click', () => {
-            this._openPopupWithConfirmation(this);
-        });
-        this._element.querySelector('.card__like').addEventListener('click', (evt) => {
-            this._toggleLike(evt);
-        });
-    };
+// @todo: Функция создания карточки
+function createCard(data, handleDelete, handleLikeClick, handleOpenImage) {
+    const cardElement = cardTemplate.cloneNode(true).querySelector('.card');
+    const cardImage = cardElement.querySelector('.card__image');
+    const cardTitle = cardElement.querySelector('.card__title');
+    const deleteButton = cardElement.querySelector('.card__delete-button');
+    const likeButton = cardElement.querySelector('.card__like-button');
 
-    deleteCard() {
-        this._element.closest('.card').remove();
-    };
+    cardImage.src = data.link;
+    cardImage.alt = data.name;
+    cardTitle.textContent = data.name;
 
-    _toggleLike(evt) {
-        evt.target.classList.contains('card__like_active') ? this._putLike(this, "DELETE") : this._putLike(this, "PUT")
-    };
+    deleteButton.addEventListener('click', () => {
+        handleDelete(cardElement);
+    });
 
-    _getTemplate() {
-        const cardElement = document
-            .querySelector(this._templateSelector)
-            .content
-            .querySelector('.card')
-            .cloneNode(true);
-        return cardElement;
-    };
+    likeButton.addEventListener('click', handleLikeClick);
 
-    _hasLike = (data) => {
-        return data.likes.some((like) => like._id === this._userId)
-    };
+    cardImage.addEventListener('click', () => handleOpenImage(cardImage.src, cardTitle.textContent));
 
-    setLikes(data) {
-        this._heart = this._element.querySelector('.card__like')
-        this._heart.dataset.like = data.likes.length;
-        this._hasLike(data) ?
-        this._heart.classList.add('card__like_active') :
-        this._heart.classList.contains('card__like_active') ?
-        this._heart.classList.remove('card__like_active') : null
+    return cardElement;
+}
+
+// @todo: Функция удаления карточки
+function deleteCard(cardElement) {
+    cardElement.remove();
+}
+
+// @todo: Функция Ставим лайк
+function handleLikeClick(evt) {
+    if (evt.target.classList.contains('card__like-button')) {
+        evt.target.classList.toggle('card__like-button_is-active');
     }
+}
 
-    generateCard() {
-        this._element = this._getTemplate();
-        this._cardImage = this._element.querySelector('.card__image');
-        this._element.querySelector('.card__name-place').textContent = this._name;
-        this._cardImage.src = this._link;
-        this._cardImage.alt = this._name;
-        this._showTrash()
-        this.setLikes(this._data)
-        this._setEventListeners();
-        return this._element;
-    };
-
-    _showTrash() {
-        this._data.owner._id === this._userId ?
-        this._element.querySelector('.card__delete').classList.remove('hide') : null
-    }
-};
+export {createCard, deleteCard, handleLikeClick}

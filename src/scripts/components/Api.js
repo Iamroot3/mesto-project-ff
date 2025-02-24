@@ -1,80 +1,66 @@
-export default class Api {
-    constructor(options) {
-        this._baseUrl = options.baseUrl
-        this._token = options.headers
-    }
+const baseUrl = 'https://mesto.nomoreparties.co/v1/cohort-mag-4';
 
-    _getResponseData(res) {
-        if (!res.ok) {
-            return Promise.reject(res.status);
-        }
-        return res.json();
-    }
+const headers = {
+    authorization: '93c90859-501a-40fa-a2ac-1175f2406f19',
+    'Content-Type': 'application/json'
+};
 
-    getInitialCards() {
-        return fetch(`${this._baseUrl}/cards`, { headers: this._token })
-            .then(res => {
-                return this._getResponseData(res)
-            })
+function getResponseData(res) {
+    if (!res.ok) {
+        return Promise.reject(res.status);
     }
+    return res.json();
+}
 
-    getUserInfo() {
-        return fetch(`${this._baseUrl}/users/me`, { headers: this._token })
-            .then(res => {
-                return this._getResponseData(res)
-            })
-    }
+export function getInitialCards() {
+    return fetch(`${baseUrl}/cards`, { headers: headers })
+        .then(res => getResponseData(res));
+}
 
-    addCard(formData) {
-        return fetch(`${this._baseUrl}/cards`, {
-            method: 'POST',
-            headers: this._token,
-            body: JSON.stringify(formData)
-        })
-        .then(res => {
-            return this._getResponseData(res)
-        })
-    }
+export function getUserInfo() {
+    return fetch(`${baseUrl}/users/me`, { headers: headers })
+        .then(res => getResponseData(res));
+}
 
-    editUserInfo(formData) {
-        return fetch(`${this._baseUrl}/users/me`, {
-            method: 'PATCH',
-            headers: this._token,
-            body: JSON.stringify(formData)
-        })
-        .then(res => {
-            return this._getResponseData(res)
-        })
-    }
+export function addCard(formData) {
+    return fetch(`${baseUrl}/cards`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(formData)
+    })
+    .then(res => getResponseData(res));
+}
 
-    deleteCard(cardId) {
-        return fetch(`${this._baseUrl}/cards/${cardId}`, {
-            method: 'DELETE',
-            headers: this._token,
-        })
-        .then(res => {
-            return this._getResponseData(res)
-        })
-    }
+export function editUserInfo(formData) {
+    return fetch(`${baseUrl}/users/me`, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify(formData)
+    })
+    .then(res => getResponseData(res));
+}
 
-    togleLike(cardId, set) {
-        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
-            method: set,
-            headers: this._token,
-        })
-        .then(res => {
-            return this._getResponseData(res)
-        })
-    }
+export function deleteCard(cardId) {
+    return fetch(`${baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: headers,
+    })
+    .then(res => getResponseData(res));
+}
 
-    changeAvatar(formData) {
-        return fetch(`${this._baseUrl}/users/me/avatar`, {
-            method: 'PATCH',
-            headers: this._token,
-            body: JSON.stringify(formData)
-        })
-        .then(res => {
-            return this._getResponseData(res)
-        })
-    }
+export function toggleLike(cardId, set) {
+    return fetch(`${baseUrl}/cards/${cardId}/likes`, {
+        method: set,
+        headers: headers,
+    })
+    .then(res => getResponseData(res));
+}
+
+export function changeAvatar(formData) {
+    return fetch(`${baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify(formData)
+    })
+    .then(res => getResponseData(res));
 }
