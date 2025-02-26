@@ -22,7 +22,7 @@ export function getUserInfo() {
         .then(res => getResponseData(res));
 }
 
-export function addCard(formData) {
+export function getAddCard(formData) {
     return fetch(`${baseUrl}/cards`, {
         method: 'POST',
         headers: headers,
@@ -40,7 +40,7 @@ export function editUserInfo(formData) {
     .then(res => getResponseData(res));
 }
 
-export function deleteCard(cardId) {
+export function getDeleteCard(cardId) {
     return fetch(`${baseUrl}/cards/${cardId}`, {
         method: 'DELETE',
         headers: headers,

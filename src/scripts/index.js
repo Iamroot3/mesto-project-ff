@@ -1,8 +1,9 @@
 import '../pages/index.css';
-import initialCards from "./components/cards";
-import {closeModal, openModal, handleOpenImage} from "./components/modal";
+import {closeModal, openModal, handleOpenImage, handleOpenConfirmation} from "./components/modal";
 import {createCard, deleteCard, handleLikeClick} from "./components/card";
 import {enableValidation, clearValidation} from "./components/validation";
+import {setUserInfo, setAvatar} from "./components/UserInfo";
+import { getInitialCards, getUserInfo, getAddCard, editUserInfo, getDeleteCard, toggleLike, changeAvatar } from '../scripts/components/Api';
 
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -17,18 +18,26 @@ const nameInput = formElement.elements.name;
 const descriptionInput = formElement.elements.description;
 const profileTitleElement = document.querySelector('.profile__title');
 const profileDescriptionElement = document.querySelector('.profile__description');
-
-// @todo: Функция редактирования профиля
-function handleEditProfile(nameValue, descriptionValue) {
-    profileTitleElement.textContent = nameValue;
-    profileDescriptionElement.textContent = descriptionValue;
-}
+const profileAvatar = document.querySelector('.profile__image');
+const userId = localStorage.getItem('userId');
 
 // @todo: Функция применить изменения
 function handleFormSubmit(evt) {
     evt.preventDefault();
-    handleEditProfile(nameInput.value, descriptionInput.value);
-    closeModal(popupEdit);
+    const nameValue = nameInput.value;
+    const descriptionValue = descriptionInput.value;
+    const formData = { name: nameValue, about: descriptionValue };
+    editUserInfo(formData)
+        .then((result) => {
+            setUserInfo(result, profileTitleElement, profileDescriptionElement);
+            closeModal(popupEdit);
+        })
+        .catch((err) => {
+            console.log(`Ьмиси: ${err}`)
+        })
+        //.finally(() => {
+        //    popupEditProfile.renderLoading(false)
+        //})
 }
 
 // @todo: Функция добавления новой карточки
@@ -41,11 +50,17 @@ function addCard(event) {
     if (placeName && placeLink) {
         const newCardData = {
             name: placeName,
-            link: placeLink,
+            link: placeLink
         };
 
-        const newCard = createCard(newCardData, deleteCard, handleLikeClick, handleOpenImage);
-        placesList.prepend(newCard);
+        getAddCard(newCardData)
+            .then((result) => {
+                const newCard = createCard(result, handleOpenImage, userId);
+                placesList.prepend(newCard);
+            })
+            .catch((err) => {
+                console.log(`Ошибка при добавлении карточки: ${err}`)
+            })
 
         newPlaceForm.reset();
         closeModal(popupNewCard);
@@ -83,13 +98,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// @todo: Вывести карточки на страницу
 function renderCards(cards) {
     cards.forEach(cardData => {
-        const card = createCard(cardData, deleteCard, handleLikeClick, handleOpenImage);
+        const card = createCard(cardData, handleOpenImage, userId);
         placesList.appendChild(card);
     });
 }
 
-renderCards(initialCards);
+getUserInfo()
+    .then(info => {
+        setUserInfo(info, profileTitleElement, profileDescriptionElement);
+        setAvatar(info.avatar, profileAvatar);
+        localStorage.setItem('userId', info._id);
+    })
+    .catch(error => {
+        console.error('Ошибка профиля:', error);
+    });
+
+getInitialCards()
+    .then(cards => {
+        renderCards(cards);
+    })
+    .catch(error => {
+        console.error('Ошибка при загрузке карточек:', error);
+    });
+
 enableValidation();
+
+placesList.addEventListener('click', function(event) {
+    if (event.target.classList.contains('card__delete-button')) {
+        const cardElement = event.target.closest('.card');
+        const cardId = cardElement.dataset.cardId;
+        console.log('cardId:', cardId, 'cardElement:', cardElement, 'dataset:', cardElement.dataset);
+
+        handleOpenConfirmation(() => {
+            getDeleteCard(cardId)
+                .then(() => {
+                    deleteCard(cardElement);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка при удалении карточки: ${err}`)
+                })
+        });
+    }
+});

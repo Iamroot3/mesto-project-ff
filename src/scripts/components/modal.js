@@ -45,4 +45,15 @@ function handleOpenImage(imageLink, imageName) {
     openModal(popupImage);
 }
 
-export {openModal, closeModal, handleOpenImage}
+function handleOpenConfirmation(onConfirm) {
+    const popupWithConfirmation = document.querySelector('.popup_confirmation');
+    openModal(popupWithConfirmation);
+  
+    const confirmButton = popupWithConfirmation.querySelector('.button__confirmation');
+    confirmButton.addEventListener('click', function() {
+      onConfirm();
+      closeModal(popupWithConfirmation);
+    });
+}
+
+export {openModal, closeModal, handleOpenImage, handleOpenConfirmation}
