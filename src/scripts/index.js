@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import {closeModal, openModal, handleOpenImage, handleOpenConfirmation} from "./components/modal";
+import {closeModal, openModal, handleOpenImage, handleOpenConfirmation, renderLoading} from "./components/modal";
 import {createCard, deleteCard, handleLikeClick} from "./components/card";
 import {enableValidation, clearValidation} from "./components/validation";
 import {setUserInfo, setAvatar} from "./components/UserInfo";
@@ -8,6 +8,7 @@ import { getInitialCards, getUserInfo, getAddCard, editUserInfo, getDeleteCard, 
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
 const newPlaceForm = document.querySelector('form[name="new-place"]');
+const changeAvatarForm = document.querySelector('form[name="change-avatar"]');
 const addButton = document.querySelector('.profile__add-button');
 const closeButtons = document.querySelectorAll('.popup__close');
 const popupNewCard = document.querySelector('.popup_type_new-card');
@@ -19,10 +20,13 @@ const descriptionInput = formElement.elements.description;
 const profileTitleElement = document.querySelector('.profile__title');
 const profileDescriptionElement = document.querySelector('.profile__description');
 const profileAvatar = document.querySelector('.profile__image');
+const popupChangeAvatar = document.querySelector('.popup_change-avatar');
 const userId = localStorage.getItem('userId');
 
 // @todo: Функция применить изменения
 function handleFormSubmit(evt) {
+    const submitButton = popupEdit.querySelector('.popup__button');
+    renderLoading(submitButton, true);
     evt.preventDefault();
     const nameValue = nameInput.value;
     const descriptionValue = descriptionInput.value;
@@ -33,15 +37,16 @@ function handleFormSubmit(evt) {
             closeModal(popupEdit);
         })
         .catch((err) => {
-            console.log(`Ьмиси: ${err}`)
+            console.log(`Ьмиси: ${err}`);
         })
-        //.finally(() => {
-        //    popupEditProfile.renderLoading(false)
-        //})
+        .finally(() => {
+            renderLoading(submitButton, false);
+        })
 }
 
-// @todo: Функция добавления новой карточки
 function addCard(event) {
+    const submitButton = newPlaceForm.querySelector('.popup__button');
+    renderLoading(submitButton, true);
     event.preventDefault();
 
     const placeName = newPlaceForm.elements['place-name'].value;
@@ -57,13 +62,15 @@ function addCard(event) {
             .then((result) => {
                 const newCard = createCard(result, handleOpenImage, userId);
                 placesList.prepend(newCard);
+                newPlaceForm.reset();
+                closeModal(popupNewCard);
             })
             .catch((err) => {
-                console.log(`Ошибка при добавлении карточки: ${err}`)
+                console.log(`Ошибка при добавлении карточки: ${err}`);
             })
-
-        newPlaceForm.reset();
-        closeModal(popupNewCard);
+            .finally(() => {
+                renderLoading(submitButton, false);
+            })
     }
 }
 
@@ -82,6 +89,30 @@ popupButtonEdit.addEventListener('click', function () {
     nameInput.value = profileTitleElement.textContent;
     descriptionInput.value = profileDescriptionElement.textContent;
     clearValidation(formElement);
+});
+
+profileAvatar.addEventListener('click', function () {
+    const avatarInput = changeAvatarForm.querySelector('.popup__input_type_url');;
+    openModal(popupChangeAvatar);
+    const changeButton = popupChangeAvatar.querySelector('.popup__button');
+    avatarInput.value = "";
+    clearValidation(formElement);
+    
+    changeButton.addEventListener('click', function() {
+        renderLoading(changeButton, true);
+        const avatarUrl = {avatar: avatarInput.value};
+        changeAvatar(avatarUrl)
+                .then(() => {
+                    setAvatar(avatarInput.value, profileAvatar);
+                    closeModal(popupChangeAvatar);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка при смене аватара: ${err}`)
+                })
+                .finally(() => {
+                    renderLoading(changeButton, false);
+                })
+    });
 });
 
 closeButtons.forEach(function (button)  {
@@ -129,7 +160,6 @@ placesList.addEventListener('click', function(event) {
     if (event.target.classList.contains('card__delete-button')) {
         const cardElement = event.target.closest('.card');
         const cardId = cardElement.dataset.cardId;
-        console.log('cardId:', cardId, 'cardElement:', cardElement, 'dataset:', cardElement.dataset);
 
         handleOpenConfirmation(() => {
             getDeleteCard(cardId)

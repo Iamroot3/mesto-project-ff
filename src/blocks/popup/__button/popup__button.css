@@ -36,3 +36,16 @@
     line-height: 17px;
   }
 }
+
+.popup__button.loading::after {
+  content: '';
+  display: -webkit-inline-box;
+  width: 0;
+  animation: loading 1s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% { content: '.'; }
+  50% { content: '..'; }
+  100% { content: '...'; }
+}

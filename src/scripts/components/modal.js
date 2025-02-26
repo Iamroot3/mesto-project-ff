@@ -56,4 +56,14 @@ function handleOpenConfirmation(onConfirm) {
     });
 }
 
-export {openModal, closeModal, handleOpenImage, handleOpenConfirmation}
+function renderLoading(submitButton, isLoading) {
+    if (isLoading) {
+        submitButton.textContent = 'Сохранение';
+        submitButton.classList.add('loading');
+    } else {
+        submitButton.classList.remove('loading');
+        submitButton.textContent = 'Сохранить';
+    }
+}
+
+export {openModal, closeModal, handleOpenImage, handleOpenConfirmation, renderLoading}
