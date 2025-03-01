@@ -1,7 +1,7 @@
 import { toggleLike } from './Api';
 const cardTemplate = document.querySelector('#card-template').content;
 
-function createCard(data, handleOpenImage, userId) {
+function createCard(data, handleOpenImage, userId, handleOpenConfirmation, deleteCard, getDeleteCard) {
     const cardElement = cardTemplate.cloneNode(true).querySelector('.card');
     const cardImage = cardElement.querySelector('.card__image');
     const cardTitle = cardElement.querySelector('.card__title');
@@ -20,6 +20,12 @@ function createCard(data, handleOpenImage, userId) {
     likeButton.addEventListener('click', () => handleLikeClick(likeButton, data, userId));
 
     cardImage.addEventListener('click', () => handleOpenImage(cardImage.src, cardTitle.textContent));
+
+    if (deleteButton) {
+        deleteButton.addEventListener('click', () => {
+            handleOpenConfirmation(cardElement, data._id);
+        });
+    }
 
     return cardElement;
 }
@@ -59,4 +65,4 @@ function showTrash(deleteButton, ownerId, userId) {
     }
 }
 
-export {createCard, deleteCard, handleLikeClick}
+export {createCard, deleteCard}

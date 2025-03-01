@@ -1,32 +1,17 @@
-const formElement = document.querySelector('.popup__form');
-const formInput = formElement.querySelector('.popup__input');
-
-const clearValidation = (formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
-
-  inputList.forEach((inputElement) => {
-    hideInputError(formElement, inputElement);
-    inputElement.setCustomValidity('');
-  });
-
-  toggleButtonState(inputList, buttonElement);
-};
-
-const showInputError = (formElement, inputElement, errorMessage) => {
+const showInputError = (formElement, inputElement, errorMessage, settings) => {
   const errorElement = formElement.querySelector(`.${inputElement.name}-error`);
   if (errorElement) {
     errorElement.textContent = errorMessage;
-    errorElement.classList.add('popup__form-error');
+    errorElement.classList.add(settings.errorClass);
   } else {
     console.warn(`Элемент для отображения ошибки с селектором .${inputElement.name}-error не найден`);
   }
 };
 
-const hideInputError = (formElement, inputElement) => {
+const hideInputError = (formElement, inputElement, settings) => {
   const errorElement = formElement.querySelector(`.${inputElement.name}-error`);
   if (errorElement) {
-    errorElement.classList.remove('popup__form-error');
+    errorElement.classList.remove(settings.errorClass);
     errorElement.textContent = '';
   } else {
     console.warn(`Элемент для отображения ошибки с селектором .${inputElement.name}-error не найден`);
@@ -41,11 +26,11 @@ const checkRegexValidity = (inputElement) => {
   return true;
 };
 
-const isValid = (formElement, inputElement) => {
+const isValid = (formElement, inputElement, settings) => {
   let errorMessage = '';
 
   if (inputElement.required && !inputElement.value) {
-    errorMessage = inputElement.validationMessage; 
+    errorMessage = inputElement.validationMessage;
   } else {
     if (inputElement.type === 'text' && !checkRegexValidity(inputElement)) {
       errorMessage = inputElement.dataset.message || "Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы.";
@@ -59,47 +44,59 @@ const isValid = (formElement, inputElement) => {
   }
 
   if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage);
+    showInputError(formElement, inputElement, inputElement.validationMessage, settings);
   } else {
-    hideInputError(formElement, inputElement);
+    hideInputError(formElement, inputElement, settings);
   }
 };
 
-const setEventListeners = (formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
-  toggleButtonState(inputList, buttonElement);
+const setEventListeners = (formElement, settings) => {
+  const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector));
+  const buttonElement = formElement.querySelector(settings.submitButtonSelector);
+  toggleButtonState(inputList, buttonElement, settings);
 
   inputList.forEach((inputElement) => {
     inputElement.addEventListener('input', () => {
-      isValid(formElement, inputElement);
-      toggleButtonState(inputList, buttonElement);
+      isValid(formElement, inputElement, settings);
+      toggleButtonState(inputList, buttonElement, settings);
     });
   });
-}; 
+};
 
 const hasInvalidInput = (inputList) => {
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
-  })
-};
-
-const toggleButtonState = (inputList, buttonElement) => {
-  if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add('popup__button_disabled');
-  } else {
-        buttonElement.disabled = false;
-    buttonElement.classList.remove('popup__button_disabled');
-  }
-}; 
-
-const enableValidation = () => {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
-
-  formList.forEach((formElement) => {
-    setEventListeners(formElement);
   });
 };
 
-export {enableValidation, clearValidation}
+const toggleButtonState = (inputList, buttonElement, settings) => {
+  if (hasInvalidInput(inputList)) {
+    buttonElement.disabled = true;
+    buttonElement.classList.add(settings.inactiveButtonClass);
+  } else {
+    buttonElement.disabled = false;
+    buttonElement.classList.remove(settings.inactiveButtonClass);
+  }
+};
+
+const enableValidation = (settings) => {
+  const formList = Array.from(document.querySelectorAll(settings.formSelector));
+
+  formList.forEach((formElement) => {
+    setEventListeners(formElement, settings);
+  });
+};
+
+const clearValidation = (formElement, settings) => {
+  const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector));
+  const buttonElement = formElement.querySelector(settings.submitButtonSelector);
+
+  inputList.forEach((inputElement) => {
+    hideInputError(formElement, inputElement, settings);
+    inputElement.setCustomValidity('');
+  });
+
+  toggleButtonState(inputList, buttonElement, settings);
+};
+
+export { enableValidation, clearValidation };

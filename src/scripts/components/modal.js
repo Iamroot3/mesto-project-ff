@@ -1,16 +1,20 @@
 function openModal(popupElement) {
     popupElement.classList.add('popup_is-opened');
+
     const closeButton = popupElement.querySelector('.popup__close');
 
-    closeButton.addEventListener('click', handleClose)
-    popupElement.addEventListener('click', handleOverlayClose)
+    closeButton.addEventListener('click', handleClose);
+    popupElement.addEventListener('click', handleOverlayClose);
     document.addEventListener('keydown', handleEscClose);
 }
 
 function closeModal(popupElement) {
     popupElement.classList.remove('popup_is-opened');
-    
-    popupElement.removeEventListener('click', handleClose);
+
+    const closeButton = popupElement.querySelector('.popup__close');
+
+    closeButton.removeEventListener('click', handleClose);
+    popupElement.removeEventListener('click', handleOverlayClose);
     document.removeEventListener('keydown', handleEscClose);
 }
 
@@ -32,30 +36,6 @@ function handleOverlayClose(evt) {
     }
 }
 
-function handleOpenImage(imageLink, imageName) {
-    const imageElement = document.querySelector('.popup__image');
-    const popupImage = document.querySelector('.popup_type_image');
-    const captionElement = document.querySelector('.popup__caption');
-
-    imageElement.src = imageLink;
-    imageElement.alt = imageName;
-
-    captionElement.textContent = imageName;
-
-    openModal(popupImage);
-}
-
-function handleOpenConfirmation(onConfirm) {
-    const popupWithConfirmation = document.querySelector('.popup_confirmation');
-    openModal(popupWithConfirmation);
-  
-    const confirmButton = popupWithConfirmation.querySelector('.button__confirmation');
-    confirmButton.addEventListener('click', function() {
-      onConfirm();
-      closeModal(popupWithConfirmation);
-    });
-}
-
 function renderLoading(submitButton, isLoading) {
     if (isLoading) {
         submitButton.textContent = 'Сохранение';
@@ -66,4 +46,4 @@ function renderLoading(submitButton, isLoading) {
     }
 }
 
-export {openModal, closeModal, handleOpenImage, handleOpenConfirmation, renderLoading}
+export {openModal, closeModal, renderLoading}
