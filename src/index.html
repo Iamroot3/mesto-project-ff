@@ -68,9 +68,9 @@
   <div class="popup popup_confirmation">
     <div class="popup__content">
         <button type="button" class="popup__close"></button>
-        <form>
+        <form class="popup__form" name="form-confirmation" novalidate>
             <h2 class="popup__title">Вы уверены?</h2>
-            <button type="button" class="button popup__button button__confirmation">Да</button>
+            <button type="submit" class="button popup__button button__confirmation">Да</button>
         </form>
     </div>
   </div>
@@ -81,7 +81,7 @@
       <form class="popup__form" name="change-avatar" novalidate>
         <input type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
         <span class="popup__form-error link-error"></span>
-        <button type="button" class="button popup__button">Сохранить</button>
+        <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
   </div>
